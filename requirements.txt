@@ -5,3 +5,5 @@ google-genai
 Pillow
 fastmcp
 tavily-python
+ngrok
+pydantic-ai

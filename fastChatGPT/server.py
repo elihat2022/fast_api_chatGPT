@@ -17,13 +17,17 @@ def web_search(query: str) -> List[Dict]:
     """
     Use this tool to perform a web search using the Tavily API.
     Args:
-        query (Search): The search query object containing the query string.
+        query (str): The search query object containing the query string.
     Returns:
         List[Dict]: A list of search results from the Tavily API.
     """
+    print(f"Received query: {query}")
     try:
+        
         response = tavily_client.search(query)
-        return response["results"]
+        print(f"Search results: {response['results']}")
+        return response['results']
+
     except Exception as e:
         print(f"Error during web search: {e}")
 
