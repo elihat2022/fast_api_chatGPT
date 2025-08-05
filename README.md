@@ -2,6 +2,14 @@
 
 This project implements a simple integration of the MCP protocol using Pydantic AI to create an agent capable of interacting with various tools based on the AI agent's determination of relevance.
 
+## Why This Project?
+
+This project simplifies the integration of AI agents that can dynamically interact with tools like Tavily, all through FastAPI’s high-performance endpoints. It’s perfect for developers looking to explore AI-driven APIs or enhance their web applications with intelligent automation.
+
+## Example Use Case
+
+The AI agent can select tools to perform tasks like retrieving real-time web data (via Tavily) or generating responses (via OpenAI/ Gemini).
+
 ## Installation
 
 - Create a virtual environment:
