@@ -1,6 +1,6 @@
 # FastAPI and MCP Integration
 
-This project implements a simple integration of the MCP protocol to create an agent capable of interacting with various tools based on the AI agent's determination of relevance.
+This project implements a simple integration of the MCP protocol using Pydantic AI to create an agent capable of interacting with various tools based on the AI agent's determination of relevance.
 
 ## Installation
 
