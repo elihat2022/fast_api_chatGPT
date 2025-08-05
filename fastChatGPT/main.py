@@ -1,68 +1,42 @@
-from dotenv import load_dotenv
-from fastapi import FastAPI
-from openai import OpenAI
+from datetime import datetime
+from fastapi import FastAPI, Form
+from agent_mcp import agent
 from pydantic import BaseModel
-from tavily import TavilyClient
-from typing import List, Dict
-import os
-from fastChatGPT.agent import agent
-
-# Load environment variables
-load_dotenv()
-
-app = FastAPI()
-
-# Initialize OpenAI client
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-# Initialize Tavily client
-tavily_client = TavilyClient(api_key=os.environ.get('TVLY'))
+from typing import Annotated
 
 
-@agent.tool_plain
-def web_search(query: str) -> List[Dict]:
-    """
-    Perform a web search using the Tavily API.
-
-    Args:
-        query: The search query string to look up on the web.
-
-    Returns:
-        A list of search results from the Tavily API, where each result is a dictionary.
-    """
-    print(f"Received query: {query}")
-    try:
-        response = tavily_client.search(query)
-        results = response.get("results", [])
-        print(f"✅ Found {len(results)} search results")
-        return results
-    except Exception as e:
-        print(f"Error during web search: {e}")
-        # En lugar de ModelRetry, retorna un error descriptivo
-        return [{"error": f"Search failed: {str(e)}"}]
+app = FastAPI(title="FastAPI and MCP Integration",)
 
 # Define a Pydantic model for the search query
-class SearchQuery(BaseModel):
+class Query(BaseModel):
     query: str
 
+# Define the root endpoint
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the FastChatGPT web search API!"}
+    return {"message": "Welcome to the FASTAPI and MCP Integration!"}
 
-@app.post("/web_search")
-async def web_search_endpoint(body: SearchQuery):
+# Define your endpoints
+@app.post("/agent")
+async def agent_endpoint(body: Annotated[Query, Form()]):
     """
-    Endpoint to perform a web search using the Tavily API.
+    Perform different tasks using the MCP agent.
+    Args:
+        body (Query): The performs the query object containing the query string.
+    Returns:
+        dict: A dictionary containing the response from the agent.
     """
     print(f"Received search query: {body.query}")
-    
-    try:
-        enhanced_prompt = f"Please search the web for information about: {body.query}, return the concise and helpful results."
-        result = await agent.run(user_prompt=enhanced_prompt)
-        print(f"Agent output: {result.output}")
-        return {"response": result.output}
-    except Exception as e:
-        print(f"Error in agent run: {e}")
-        return {"response": f"Error: {str(e)}"}
+    async with agent:
+        try:
+            enhanced_prompt = f"Please search for information about: {body.query} or performs what the user needs, you have tools to help you, return the concise and helpful results. Today is {datetime.now().strftime('%Y-%m-%d')}. "+"if user asks for saving/writing files create a folder named 'files' in the root directory and save the files there."+ f"Using the pinecone MCP server, search the index for {body.query} and return the text field."
+            # Run the agent with the enhanced prompt
+            result = await agent.run(user_prompt=enhanced_prompt)
+            print(f"Agent output: {result.output}")
+            return {"response": result.output}
+        except Exception as e:
+            print(f"Error in agent run: {e}")
+            return {"response": f"Error: {str(e)}"}
 
 
 if __name__ == "__main__":
