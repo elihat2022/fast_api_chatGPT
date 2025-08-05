@@ -29,7 +29,7 @@ async def agent_endpoint(body: Annotated[Query, Form()]):
     print(f"Received search query: {body.query}")
     async with agent:
         try:
-            enhanced_prompt = f"Please search for information about: {body.query} or performs what the user needs, you have tools to help you, return the concise and helpful results. Today is {datetime.now().strftime('%Y-%m-%d')}. "+"if user asks for saving/writing files create a folder named 'files' in the root directory and save the files there."+ f"Using the pinecone MCP server, search the index for {body.query} and return the text field."
+            enhanced_prompt = f"Please search for information about: {body.query} or performs what the user needs, you have tools to help you, return the concise and helpful results. Today is {datetime.now().strftime('%Y-%m-%d')}. "+"if user asks for saving/writing files create a folder named 'files' in the root directory and save the files there."
             # Run the agent with the enhanced prompt
             result = await agent.run(user_prompt=enhanced_prompt)
             print(f"Agent output: {result.output}")
